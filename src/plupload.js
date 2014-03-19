@@ -1640,7 +1640,7 @@ plupload.Uploader = function(options) {
 	setOption.call(this, options, null, true);
 
 	// Inital total state
-	total = new plupload.QueueProgress(); 
+	total = new QueueProgress(); 
 
 	// Add public methods
 	plupload.extend(this, {
@@ -2229,7 +2229,7 @@ plupload.File = (function() {
  * @class QueueProgress
  * @constructor
  */
- plupload.QueueProgress = function() {
+ var QueueProgress = function() {
 	var self = this; // Setup alias for self to reduce code size when it's compressed
 
 	/**
