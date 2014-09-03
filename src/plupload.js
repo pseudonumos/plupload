@@ -709,6 +709,7 @@ plupload.addFileFilter('prevent_duplicates', function(value, file, cb) {
 	@param {String} [settings.flash_swf_url] URL of the Flash swf.
 	@param {Object} [settings.headers] Custom headers to send with the upload. Hash of name/value pairs.
 	@param {Number} [settings.max_retries=0] How many times to retry the chunk or file, before triggering Error event.
+    @param {Number} [settings.max_upload_slots=1] How many concurrent uploads to queue.
 	@param {Boolean} [settings.multipart=true] Whether to send file and additional parameters as Multipart formated message.
 	@param {Object} [settings.multipart_params] Hash of key/value pairs to send with every file upload.
 	@param {Boolean} [settings.multi_selection=true] Enable ability to select multiple files at once in file dialog.
