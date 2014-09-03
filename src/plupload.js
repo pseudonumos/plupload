@@ -1631,7 +1631,7 @@ plupload.Uploader = function(options) {
 			} else {
 				pendingUploads.add(file.id, file);
 			}
-		}
+		},
 
 		/**
 		 * Returns the specified file object by id.
