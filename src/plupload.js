@@ -2329,7 +2329,7 @@ plupload.File = (function() {
 				} else {
 					uploadNextChunk();
 				}
-			}
+			},
 
 			cancelUpload: function() {
 				if (xhr) {
@@ -2337,7 +2337,7 @@ plupload.File = (function() {
 					xhr.destroy();
 					xhr = null;
 				}
-			}
+			},
 
 			/**
 			 * Destroys plupload.File object.
