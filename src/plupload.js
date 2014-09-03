@@ -2101,8 +2101,6 @@ plupload.File = (function() {
 			*/
 			upload: function(options) {
 
-                console.log(this.features);
-
 				options = plupload.extend({
 					multipart: true,
 					multipart_params: {},
