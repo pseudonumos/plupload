@@ -1619,6 +1619,8 @@ plupload.Uploader = function(options) {
 
 			if (activeUploads.length < maxSlots) {
 				activeUploads.add(file.id, file);
+
+                file.features = this.features;
 				file.upload(up.getOption());
 
 				this.trigger('UploadFile', file);
@@ -2038,6 +2040,16 @@ plupload.File = (function() {
 			 */
 			status: plupload.QUEUED,
 
+            /**
+             * Map of features that are available for the uploader runtime. Features will be filled
+             * before the init event is called, these features can then be used to alter the UI for the end user.
+             * Some of the current features that might be in this map is: dragdrop, chunks, jpgresize, pngresize.
+             *
+             * @property features
+             * @type Object
+             */
+            features : {},
+
 			/**
 			 * Date of last modification.
 			 *
@@ -2089,6 +2101,8 @@ plupload.File = (function() {
 			*/
 			upload: function(options) {
 
+                console.log(this.features);
+
 				options = plupload.extend({
 					multipart: true,
 					multipart_params: {},
@@ -2097,7 +2111,6 @@ plupload.File = (function() {
 					chunk_size: 0,
 					send_chunk_number: true, // whether to send chunks and chunk numbers, or total and offset bytes
 					max_retries: 0,
-					features: {},
 					resize: {
 						enabled: false,
 						preserve_headers: true,
@@ -2107,11 +2120,9 @@ plupload.File = (function() {
 
 				var file = this
 				, blob = file.getSource()
-				, canSliceBlob = runtime(blob, 'slice_blob')
-				, canSendMultipart = runtimeCan(blob, 'send_multipart')
 				, chunkSize = options.chunk_size
 				, retries = options.max_retries
-				, features = options.features
+				, features = file.features
 				, offset = 0
 				;
 
@@ -2125,7 +2136,7 @@ plupload.File = (function() {
 
 						file.status = plupload.FAILED;
 
-						up.trigger('Error', {
+						file.trigger('Error', {
 							code : plupload.HTTP_ERROR,
 							message : plupload.translate('HTTP Error.'),
 							file : file,
@@ -2145,12 +2156,12 @@ plupload.File = (function() {
 					;
 
 					// make sure that file wasn't cancelled and upload is not stopped in general
-					if (file.status !== plupload.UPLOADING || up.state === plupload.STOPPED) {
+					if (file.status !== plupload.UPLOADING || file.state === plupload.STOPPED) {
 						return;
 					}
 
 					// send additional 'name' parameter only if required
-					if (up.settings.send_file_name) {
+					if (options.send_file_name) {
 						data.name = file.target_name || file.name;
 					}
 
@@ -2287,7 +2298,7 @@ plupload.File = (function() {
 						xhr.send(formData, {
 							runtime_order: options.runtimes,
 							required_caps: options.required_features,
-							preferred_caps: preferred_caps,
+							preferred_caps: options.preferred_caps,
 							swf_url: options.flash_swf_url,
 							xap_url: options.silverlight_xap_url
 						});
@@ -2307,7 +2318,7 @@ plupload.File = (function() {
 						xhr.send(chunkBlob, {
 							runtime_order: options.runtimes,
 							required_caps: options.required_features,
-							preferred_caps: preferred_caps,
+							preferred_caps: options.preferred_caps,
 							swf_url: options.flash_swf_url,
 							xap_url: options.silverlight_xap_url
 						});
@@ -2320,9 +2331,9 @@ plupload.File = (function() {
 				}
 
 				// Start uploading chunks
-				if (up.settings.resize.enabled && runtimeCan(blob, 'send_binary_string') && !!~o.inArray(blob.type, ['image/jpeg', 'image/png'])) {
+				if (options.resize.enabled && file.isImage() && runtimeCan(blob, 'send_binary_string')) {
 					// Resize if required
-					resizeImage.call(this, blob, up.settings.resize, function(resizedBlob) {
+					resizeImage.call(this, blob, options.resize, function(resizedBlob) {
 						blob = resizedBlob;
 						file.size = resizedBlob.size;
 						uploadNextChunk();
