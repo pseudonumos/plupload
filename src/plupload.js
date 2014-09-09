@@ -1677,6 +1677,10 @@ plupload.Uploader = function(options) {
 				file.bind('uploaded', function(e, args) {
 					self.trigger('FileUploaded', file, args);
 				});
+
+                                file.bind('error', function(e, args) {
+                                        self.trigger('Error', args);
+                                });
 			}
 
 			function filterFile(file, cb) {
